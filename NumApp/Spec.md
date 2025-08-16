@@ -8,7 +8,7 @@ This is an iOS app using Swift and SwiftUI. The game displays a 5x5 grid of sing
 
 ### Game Features
 
-- **5x5 Grid**: Single digits (0-9) displayed in a colorful grid
+- **5x5 Grid**: Single digits (0-9) displayed in a grid with flat pastel color backgrounds for improved readability
 - **3 Questions per Level**: Each question shows an equation like "45 + 23 = ?" where players find digits that form "68"
 - **Multi-directional Solutions**: Solutions can be found horizontally, vertically, diagonally, and in both forward and backward directions
 - **Touch & Drag Selection**: Players tap or drag their finger across adjacent cells to select digit sequences
@@ -19,7 +19,7 @@ This is an iOS app using Swift and SwiftUI. The game displays a 5x5 grid of sing
 - **5-Level Game**: Game consists of 5 levels total with increasing difficulty
 - **Level Completion Animations**: Fireworks celebration when completing each level
 - **Game Completion Celebration**: Full-screen spectacular animation with fireworks, dancing unicorns, and rainbows when all 5 levels are completed
-- **Kid-Friendly UI**: Colorful design with emojis, gradients, animations, and haptic feedback
+- **Kid-Friendly UI**: Clean design with flat pastel colors for better number readability, emojis, animations, and haptic feedback
 
 ### Technical Implementation
 
@@ -33,11 +33,18 @@ The game consists of several key components:
 
 #### Views
 - **GameView**: Main game interface with progress, questions, and controls
-- **GridView**: Displays the number grid with drag gesture support
+- **GridView**: Displays the number grid with flat pastel color backgrounds and drag gesture support
 - **QuestionView**: Shows current question with solved status
 - **FireworksView**: Particle-based fireworks animation for celebrations
 - **DancingUnicornsView**: Animated unicorn emojis that bounce around the screen
 - **RainbowView**: Moving rainbow arcs animation
+
+#### Grid Cell Styling
+- **Flat Pastel Colors**: Uses 5 carefully chosen pastel colors for grid cell backgrounds to improve number readability
+- **Color Palette**: Light pink, light green, light blue, light yellow, and light lavender
+- **High Contrast Text**: Black text on pastel backgrounds ensures excellent readability
+- **Selected State**: Orange highlight color for selected cells with clear visual feedback
+- **Simplified Design**: Flat colors replace gradients for a cleaner, more accessible interface
 
 #### Game Logic
 - Random question generation with guaranteed solutions (1-3 digit answers)
