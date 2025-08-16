@@ -492,10 +492,16 @@ struct GridCellView: View {
     let position: GridPosition
     @Bindable var gameModel: GameModel
     
-    // Fun colors for different digits
+    // Pastel colors for different digits (limited to 5 colors for better readability)
     private var cellColor: Color {
-        let colors: [Color] = [.red, .orange, .yellow, .green, .mint, .cyan, .blue, .indigo, .purple, .pink]
-        return colors[value % colors.count]
+        let pastelColors: [Color] = [
+            Color(red: 1.0, green: 0.9, blue: 0.9),   // Light pink
+            Color(red: 0.9, green: 1.0, blue: 0.9),   // Light green
+            Color(red: 0.9, green: 0.9, blue: 1.0),   // Light blue
+            Color(red: 1.0, green: 1.0, blue: 0.9),   // Light yellow
+            Color(red: 0.95, green: 0.9, blue: 1.0)   // Light lavender
+        ]
+        return pastelColors[value % pastelColors.count]
     }
     
     var body: some View {
@@ -503,33 +509,17 @@ struct GridCellView: View {
             RoundedRectangle(cornerRadius: 8)
                 .fill(
                     isSelected ?
-                    LinearGradient(
-                        colors: [.yellow, .orange],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ) :
-                    LinearGradient(
-                        colors: [.white, cellColor.opacity(0.1)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
+                    Color.orange.opacity(0.8) :
+                    cellColor
                 )
                 .stroke(
                     isSelected ?
-                    LinearGradient(
-                        colors: [.orange, .red],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    ) :
-                    LinearGradient(
-                        colors: [cellColor.opacity(0.4), cellColor.opacity(0.6)],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    ),
+                    Color.orange :
+                    cellColor.opacity(0.6),
                     lineWidth: isSelected ? 3 : 2
                 )
                 .shadow(
-                    color: isSelected ? .orange.opacity(0.4) : cellColor.opacity(0.2),
+                    color: isSelected ? .orange.opacity(0.4) : .gray.opacity(0.3),
                     radius: isSelected ? 6 : 3,
                     x: 0,
                     y: isSelected ? 3 : 2
@@ -538,8 +528,8 @@ struct GridCellView: View {
             Text("\(value)")
                 .font(.system(size: 18, weight: .bold, design: .rounded))
                 .foregroundColor(
-                    isSelected ? .white :
-                    (value == 0 ? .gray : cellColor.opacity(0.8))
+                    isSelected ? .white : 
+                    (value == 0 ? .gray : .black.opacity(0.8))
                 )
                 .scaleEffect(isSelected ? 1.2 : 1.0)
                 .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isSelected)
