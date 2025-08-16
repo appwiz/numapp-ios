@@ -292,7 +292,7 @@ struct GameView: View {
                                     .foregroundColor(.white)
                                     .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 2)
                                 
-                                Text("You completed all 10 levels!")
+                                Text("You completed all 5 levels!")
                                     .font(.system(size: 18, weight: .semibold, design: .rounded))
                                     .foregroundColor(.white.opacity(0.9))
                                     .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 2)

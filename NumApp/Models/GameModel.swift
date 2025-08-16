@@ -10,7 +10,7 @@ import SwiftUI
 
 @Observable
 class GameModel {
-    static let maxLevel = 10
+    static let maxLevel = 5
     
     var gridModel = GridModel()
     var questions: [Question] = []

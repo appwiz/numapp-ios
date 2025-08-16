@@ -16,6 +16,9 @@ This is an iOS app using Swift and SwiftUI. The game displays a 5x5 grid of sing
 - **Solution Validation**: The game validates that selected sequences form valid adjacent paths and match the target answer
 - **Progress Tracking**: Visual progress indicator with colorful circles shows how many questions are solved (out of 3)
 - **Level Progression**: Complete all 3 solutions to advance to the next level
+- **5-Level Game**: Game consists of 5 levels total with increasing difficulty
+- **Level Completion Animations**: Fireworks celebration when completing each level
+- **Game Completion Celebration**: Full-screen spectacular animation with fireworks, dancing unicorns, and rainbows when all 5 levels are completed
 - **Kid-Friendly UI**: Colorful design with emojis, gradients, animations, and haptic feedback
 
 ### Technical Implementation
@@ -32,6 +35,9 @@ The game consists of several key components:
 - **GameView**: Main game interface with progress, questions, and controls
 - **GridView**: Displays the number grid with drag gesture support
 - **QuestionView**: Shows current question with solved status
+- **FireworksView**: Particle-based fireworks animation for celebrations
+- **DancingUnicornsView**: Animated unicorn emojis that bounce around the screen
+- **RainbowView**: Moving rainbow arcs animation
 
 #### Game Logic
 - Random question generation with guaranteed solutions (1-3 digit answers)
@@ -39,7 +45,10 @@ The game consists of several key components:
 - Answer range validation (targets between 10-99 for reasonable difficulty)
 - Conflict-free question generation (solutions don't overlap)
 - Automatic progression to next unsolved question
-- Grid regeneration for new levels with level counter
+- Grid regeneration for new levels with level counter (max 5 levels)
+- Level completion detection with celebration triggers
+- Game completion with full-screen animated celebration
+- Restart functionality to replay from level 1
 
 ## Project Structure
 
@@ -70,6 +79,9 @@ Open `NumApp.xcodeproj` in Xcode to build and run the iOS app.
 5. **Number Formation**: Selected digits are concatenated in selection order to form the target number
 6. **Completion**: Solve all 3 questions to advance to the next level
 7. **Feedback**: Wrong selections trigger haptic feedback; correct solutions show celebrations
+8. **Level Celebrations**: Fireworks animation plays when completing each level
+9. **Game Victory**: Complete all 5 levels to trigger the ultimate celebration with fireworks, dancing unicorns, and rainbows
+10. **Restart**: Use the "Play Again" button in the victory screen to restart from level 1
 
 ## Requirements
 
