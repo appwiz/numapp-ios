@@ -9,36 +9,43 @@ import Foundation
 
 struct Question: Identifiable {
     let id = UUID()
-    let operands: [Int]
-    let targetSum: Int
+    let firstOperand: Int
+    let secondOperand: Int
+    let answer: Int
     let solutionPositions: [GridPosition]
     var isSolved: Bool = false
     
-    init(operands: [Int], targetSum: Int, solutionPositions: [GridPosition]) {
-        self.operands = operands
-        self.targetSum = targetSum
+    init(firstOperand: Int, secondOperand: Int, solutionPositions: [GridPosition]) {
+        self.firstOperand = firstOperand
+        self.secondOperand = secondOperand
+        self.answer = firstOperand + secondOperand
         self.solutionPositions = solutionPositions
     }
     
     /// Create a question from a solution path in the grid
     static func createQuestion(from positions: [GridPosition], grid: [[Int]]) -> Question? {
-        guard positions.count == 2 else { return nil }
+        guard positions.count >= 1 else { return nil }
         
-        let operands = positions.map { grid[$0.row][$0.col] }
-        let targetSum = operands.reduce(0, +)
+        let digits = positions.map { grid[$0.row][$0.col] }
+        let answerString = digits.map { String($0) }.joined()
+        guard let answer = Int(answerString) else { return nil }
         
-        return Question(operands: operands, targetSum: targetSum, solutionPositions: positions)
+        // Generate random operands that add up to this answer
+        // Ensure we have a valid range for the first operand
+        guard answer >= 2 else { return nil }
+        let firstOperand = Int.random(in: 1...(answer - 1))
+        let secondOperand = answer - firstOperand
+        
+        return Question(firstOperand: firstOperand, secondOperand: secondOperand, solutionPositions: positions)
     }
     
     /// Get the equation string representation
     var equationString: String {
-        let operandStrings = operands.map { String($0) }
-        return operandStrings.joined(separator: " + ") + " = ?"
+        return "\(firstOperand) + \(secondOperand) = ?"
     }
     
     /// Get the solved equation string
     var solvedEquationString: String {
-        let operandStrings = operands.map { String($0) }
-        return operandStrings.joined(separator: " + ") + " = \(targetSum)"
+        return "\(firstOperand) + \(secondOperand) = \(answer)"
     }
 }

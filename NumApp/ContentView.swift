@@ -19,97 +19,252 @@ struct GameView: View {
     @Bindable var gameModel: GameModel
     
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 25) {
             // Header with level and progress
-            VStack(spacing: 10) {
-                Text("Numbers Game")
+            VStack(spacing: 15) {
+                Text("🔢 Numbers Game 🎯")
                     .font(.largeTitle)
                     .fontWeight(.bold)
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [.blue, .purple],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
                 
-                Text("Level \(gameModel.level)")
-                    .font(.title2)
-                    .foregroundColor(.secondary)
-                
-                // Progress indicator
                 HStack {
-                    Text("Progress:")
-                    ForEach(0..<5, id: \.self) { index in
-                        Circle()
-                            .fill(index < gameModel.progress.solved ? Color.green : Color.gray.opacity(0.3))
-                            .frame(width: 12, height: 12)
-                    }
-                    Text("\(gameModel.progress.solved)/5")
+                    Text("🌟")
+                        .font(.title2)
+                    Text("Level \(gameModel.level)")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.orange)
+                    Text("🌟")
+                        .font(.title2)
                 }
-                .font(.caption)
+                
+                // Progress indicator with fun colors and New Level button
+                HStack {
+                    VStack(spacing: 8) {
+                        Text("Progress: \(gameModel.progress.solved)/3")
+                            .font(.headline)
+                            .foregroundColor(.secondary)
+                        
+                        HStack(spacing: 8) {
+                            ForEach(0..<3, id: \.self) { index in
+                                Circle()
+                                    .fill(index < gameModel.progress.solved ?
+                                         LinearGradient(colors: [.green, .mint], startPoint: .top, endPoint: .bottom) :
+                                         LinearGradient(colors: [.gray.opacity(0.3), .gray.opacity(0.2)], startPoint: .top, endPoint: .bottom))
+                                    .frame(width: 20, height: 20)
+                                    .overlay(
+                                        Circle()
+                                            .stroke(.white, lineWidth: 2)
+                                            .opacity(index < gameModel.progress.solved ? 1 : 0)
+                                    )
+                                    .scaleEffect(index < gameModel.progress.solved ? 1.2 : 1.0)
+                                    .animation(.spring(response: 0.5, dampingFraction: 0.7), value: gameModel.progress.solved)
+                            }
+                        }
+                    }
+                    
+                    Spacer()
+                    
+                    // New Level button moved next to progress
+                    Button(action: {
+                        gameModel.generateNewLevel()
+                    }) {
+                        HStack {
+                            Image(systemName: "sparkles")
+                                .font(.title3)
+                            Text("New Level")
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                        }
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
+                        .background(
+                            LinearGradient(
+                                colors: [.purple, .pink],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .cornerRadius(20)
+                        .shadow(color: .purple.opacity(0.3), radius: 5, x: 0, y: 3)
+                    }
+                }
             }
-            .padding()
+            .padding(.horizontal)
+            .padding(.top, 10)
             
-            // Current question
+            // Current question with colorful background
             if let question = gameModel.currentQuestion {
-                QuestionView(question: question)
-                    .padding(.horizontal)
+                QuestionView(question: question, gameModel: gameModel)
+                    .padding(.horizontal, 20)
             }
             
-            // Grid
+            // Grid with improved styling
             GridView(gameModel: gameModel)
-                .padding()
+                .padding(.horizontal, 20)
             
-            // Controls
-            HStack(spacing: 20) {
-                Button("Clear Selection") {
-                    gameModel.gridModel.clearSelection()
-                }
-                .disabled(gameModel.gridModel.selectedPositions.isEmpty)
-                
-                Button("Check Solution") {
-                    let isCorrect = gameModel.checkSolution()
-                    if !isCorrect {
-                        // Could add haptic feedback or visual feedback here
+            // Controls with kid-friendly styling
+            VStack(spacing: 15) {
+                HStack(spacing: 20) {
+                    Button(action: {
+                        gameModel.gridModel.clearSelection()
+                    }) {
+                        HStack {
+                            Image(systemName: "arrow.counterclockwise")
+                                .font(.title3)
+                            Text("Clear")
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                        }
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 12)
+                        .background(
+                            LinearGradient(
+                                colors: [.orange, .red],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .cornerRadius(25)
+                        .shadow(color: .orange.opacity(0.3), radius: 5, x: 0, y: 3)
                     }
-                }
-                .disabled(gameModel.gridModel.selectedPositions.count != 2)
-                .buttonStyle(.borderedProminent)
-                
-                Button("New Level") {
-                    gameModel.generateNewLevel()
+                    .disabled(gameModel.gridModel.selectedPositions.isEmpty)
+                    .opacity(gameModel.gridModel.selectedPositions.isEmpty ? 0.6 : 1.0)
+                    
+                    Button(action: {
+                        let isCorrect = gameModel.checkSolution()
+                        if !isCorrect {
+                            // Add haptic feedback for wrong answers
+                            let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+                            impactFeedback.impactOccurred()
+                        }
+                    }) {
+                        HStack {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.title3)
+                            Text("Check!")
+                                .font(.headline)
+                                .fontWeight(.bold)
+                        }
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 12)
+                        .background(
+                            LinearGradient(
+                                colors: [.green, .blue],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .cornerRadius(25)
+                        .shadow(color: .green.opacity(0.3), radius: 5, x: 0, y: 3)
+                    }
+                    .disabled(gameModel.gridModel.selectedPositions.isEmpty)
+                    .opacity(gameModel.gridModel.selectedPositions.isEmpty ? 0.6 : 1.0)
+                    .scaleEffect(gameModel.gridModel.selectedPositions.isEmpty ? 0.95 : 1.0)
+                    .animation(.easeInOut(duration: 0.2), value: gameModel.gridModel.selectedPositions.isEmpty)
                 }
             }
-            .padding()
+            .padding(.horizontal, 20)
             
             Spacer()
         }
-        .background(Color(.systemGroupedBackground))
+        .background(
+            LinearGradient(
+                colors: [
+                    Color(.systemBackground),
+                    Color.blue.opacity(0.05),
+                    Color.purple.opacity(0.05)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
     }
 }
 
 struct QuestionView: View {
     let question: Question
+    let gameModel: GameModel
     
     var body: some View {
-        VStack(spacing: 8) {
-            Text("Find two numbers that add up to:")
-                .font(.headline)
-                .foregroundColor(.secondary)
+        VStack(spacing: 12) {
+            HStack {
+                Text("🧮")
+                    .font(.title2)
+                Text("Find digits that form the answer:")
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.indigo)
+                Text("🔍")
+                    .font(.title2)
+            }
             
-            Text(question.isSolved ? question.solvedEquationString : question.equationString)
-                .font(.title)
-                .fontWeight(.semibold)
-                .foregroundColor(question.isSolved ? .green : .primary)
+            Text(displayEquation)
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .foregroundStyle(
+                    question.isSolved ?
+                    LinearGradient(colors: [.green, .mint], startPoint: .leading, endPoint: .trailing) :
+                    LinearGradient(colors: [.blue, .purple], startPoint: .leading, endPoint: .trailing)
+                )
                 .monospaced()
+                .padding(.vertical, 8)
             
             if question.isSolved {
-                Text("✓ Solved!")
-                    .font(.caption)
-                    .foregroundColor(.green)
-                    .fontWeight(.semibold)
+                HStack {
+                    Text("🎉")
+                        .font(.title)
+                    Text("Awesome! You got it!")
+                        .font(.title3)
+                        .fontWeight(.bold)
+                        .foregroundColor(.green)
+                    Text("🎉")
+                        .font(.title)
+                }
+                .scaleEffect(1.1)
+                .animation(.spring(response: 0.6, dampingFraction: 0.8), value: question.isSolved)
             }
         }
-        .padding()
+        .padding(.horizontal, 20)
+        .padding(.vertical, 16)
         .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(question.isSolved ? Color.green.opacity(0.1) : Color(.systemBackground))
-                .stroke(question.isSolved ? Color.green : Color.gray.opacity(0.3), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 20)
+                .fill(
+                    question.isSolved ?
+                    LinearGradient(colors: [.green.opacity(0.1), .mint.opacity(0.1)], startPoint: .topLeading, endPoint: .bottomTrailing) :
+                    LinearGradient(colors: [.blue.opacity(0.05), .purple.opacity(0.05)], startPoint: .topLeading, endPoint: .bottomTrailing)
+                )
+                .stroke(
+                    question.isSolved ?
+                    LinearGradient(colors: [.green, .mint], startPoint: .leading, endPoint: .trailing) :
+                    LinearGradient(colors: [.blue.opacity(0.3), .purple.opacity(0.3)], startPoint: .leading, endPoint: .trailing),
+                    lineWidth: 2
+                )
         )
+        .shadow(color: question.isSolved ? .green.opacity(0.2) : .blue.opacity(0.1), radius: 8, x: 0, y: 4)
+    }
+    
+    private var displayEquation: String {
+        if question.isSolved {
+            return question.solvedEquationString
+        } else {
+            let selectedDigits = gameModel.gridModel.selectedValues
+            if selectedDigits.isEmpty {
+                return question.equationString
+            } else {
+                let selectedNumber = selectedDigits.map { String($0) }.joined()
+                return "\(question.firstOperand) + \(question.secondOperand) = \(selectedNumber)"
+            }
+        }
     }
 }
 
@@ -117,9 +272,9 @@ struct GridView: View {
     @Bindable var gameModel: GameModel
     
     var body: some View {
-        VStack(spacing: 2) {
+        VStack(spacing: 4) {
             ForEach(0..<GridModel.gridSize, id: \.self) { row in
-                HStack(spacing: 2) {
+                HStack(spacing: 4) {
                     ForEach(0..<GridModel.gridSize, id: \.self) { col in
                         let position = GridPosition(row, col)
                         let isSelected = gameModel.gridModel.selectedPositions.contains(position)
@@ -135,8 +290,26 @@ struct GridView: View {
                 }
             }
         }
-        .background(Color.gray.opacity(0.1))
-        .cornerRadius(8)
+        .padding(8)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(
+                    LinearGradient(
+                        colors: [.blue.opacity(0.1), .purple.opacity(0.1)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .stroke(
+                    LinearGradient(
+                        colors: [.blue.opacity(0.3), .purple.opacity(0.3)],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    ),
+                    lineWidth: 2
+                )
+        )
+        .shadow(color: .blue.opacity(0.1), radius: 8, x: 0, y: 4)
     }
 }
 
@@ -146,31 +319,84 @@ struct GridCellView: View {
     let position: GridPosition
     @Bindable var gameModel: GameModel
     
+    // Fun colors for different digits
+    private var cellColor: Color {
+        let colors: [Color] = [.red, .orange, .yellow, .green, .mint, .cyan, .blue, .indigo, .purple, .pink]
+        return colors[value % colors.count]
+    }
+    
     var body: some View {
-        Text("\(value)")
-            .font(.system(size: 12, weight: .medium, design: .monospaced))
-            .frame(width: 32, height: 32)
-            .background(
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(isSelected ? Color.blue : Color.white)
-                    .stroke(Color.gray.opacity(0.3), lineWidth: 0.5)
-            )
-            .foregroundColor(isSelected ? .white : .primary)
-            .scaleEffect(isSelected ? 1.1 : 1.0)
-            .animation(.easeInOut(duration: 0.1), value: isSelected)
-            .gesture(
-                DragGesture(minimumDistance: 0)
-                    .onChanged { _ in
-                        if !gameModel.gridModel.isSelecting {
-                            gameModel.gridModel.startSelection(at: position)
-                        } else {
-                            gameModel.gridModel.addToSelection(position)
-                        }
-                    }
-                    .onEnded { _ in
-                        gameModel.gridModel.endSelection()
-                    }
-            )
+        ZStack {
+            RoundedRectangle(cornerRadius: 8)
+                .fill(
+                    isSelected ?
+                    LinearGradient(
+                        colors: [.yellow, .orange],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ) :
+                    LinearGradient(
+                        colors: [.white, cellColor.opacity(0.1)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .stroke(
+                    isSelected ?
+                    LinearGradient(
+                        colors: [.orange, .red],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    ) :
+                    LinearGradient(
+                        colors: [cellColor.opacity(0.4), cellColor.opacity(0.6)],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    ),
+                    lineWidth: isSelected ? 3 : 2
+                )
+                .shadow(
+                    color: isSelected ? .orange.opacity(0.4) : cellColor.opacity(0.2),
+                    radius: isSelected ? 6 : 3,
+                    x: 0,
+                    y: isSelected ? 3 : 2
+                )
+            
+            Text("\(value)")
+                .font(.system(size: 18, weight: .bold, design: .rounded))
+                .foregroundColor(
+                    isSelected ? .white :
+                    (value == 0 ? .gray : cellColor.opacity(0.8))
+                )
+                .scaleEffect(isSelected ? 1.2 : 1.0)
+                .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isSelected)
+        }
+        .frame(width: 50, height: 50)
+        .scaleEffect(isSelected ? 1.1 : 1.0)
+        .animation(.spring(response: 0.4, dampingFraction: 0.6), value: isSelected)
+        .onTapGesture {
+            handleCellInteraction()
+            // Add haptic feedback for taps
+            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+            impactFeedback.impactOccurred()
+        }
+        .gesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in
+                    handleCellInteraction()
+                }
+                .onEnded { _ in
+                    gameModel.gridModel.endSelection()
+                }
+        )
+    }
+    
+    private func handleCellInteraction() {
+        if !gameModel.gridModel.isSelecting {
+            gameModel.gridModel.startSelection(at: position)
+        } else {
+            gameModel.gridModel.addToSelection(position)
+        }
     }
 }
 

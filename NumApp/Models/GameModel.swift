@@ -19,19 +19,19 @@ class GameModel {
         generateNewLevel()
     }
     
-    /// Generate a new level with 5 questions
+    /// Generate a new level with 3 questions
     func generateNewLevel() {
         gridModel.generateNewGrid()
         questions = generateQuestions()
         currentQuestionIndex = 0
     }
     
-    /// Generate 5 questions with guaranteed solutions
+    /// Generate 3 questions with guaranteed solutions
     private func generateQuestions() -> [Question] {
         var generatedQuestions: [Question] = []
         let maxAttempts = 100
         
-        while generatedQuestions.count < 5 {
+        while generatedQuestions.count < 3 {
             var attempts = 0
             var questionGenerated = false
             
@@ -68,17 +68,18 @@ class GameModel {
             (1, -1),  (1, 0),  (1, 1)    // Down-left, Down, Down-right
         ]
         
-        for _ in 0..<50 { // Try 50 random positions
+        for _ in 0..<100 { // Try 100 random positions and lengths
             let startRow = Int.random(in: 0..<GridModel.gridSize)
             let startCol = Int.random(in: 0..<GridModel.gridSize)
             let direction = directions.randomElement()!
+            let sequenceLength = Int.random(in: 1...3) // 1-3 digit answers
             
-            // Try to create a 2-number sequence in this direction
+            // Try to create a digit sequence in this direction
             var positions: [GridPosition] = []
             var currentRow = startRow
             var currentCol = startCol
             
-            for _ in 0..<2 {
+            for _ in 0..<sequenceLength {
                 let position = GridPosition(currentRow, currentCol)
                 if gridModel.isValidPosition(position) {
                     positions.append(position)
@@ -89,9 +90,12 @@ class GameModel {
                 }
             }
             
-            if positions.count == 2 {
+            if positions.count == sequenceLength {
                 if let question = Question.createQuestion(from: positions, grid: gridModel.grid) {
-                    return question
+                    // Only accept answers between 10 and 99 for reasonable difficulty
+                    if question.answer >= 10 && question.answer <= 99 {
+                        return question
+                    }
                 }
             }
         }
@@ -116,9 +120,8 @@ class GameModel {
     func checkSolution() -> Bool {
         guard let question = currentQuestion else { return false }
         
-        if gridModel.doesSelectionMatch(solution: question.solutionPositions) &&
-           gridModel.selectedSum == question.targetSum {
-            
+        // Check if the selected digits form the correct answer
+        if gridModel.doesSelectionFormNumber(question.answer) {
             // Mark question as solved
             questions[currentQuestionIndex].isSolved = true
             gridModel.clearSelection()

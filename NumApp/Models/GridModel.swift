@@ -20,11 +20,11 @@ class GridModel {
         generateNewGrid()
     }
     
-    /// Generate a new random grid with numbers 0-99
+    /// Generate a new random grid with single digits 0-9
     func generateNewGrid() {
         grid = (0..<GridModel.gridSize).map { _ in
             (0..<GridModel.gridSize).map { _ in
-                Int.random(in: 0...99)
+                Int.random(in: 0...9)
             }
         }
         selectedPositions.removeAll()
@@ -49,23 +49,21 @@ class GridModel {
         isSelecting = true
     }
     
-    /// Add position to selection if it forms a valid line
+    /// Add position to selection if it's adjacent to the last selected position
     func addToSelection(_ position: GridPosition) {
         guard isSelecting && isValidPosition(position) else { return }
         
         // Don't add if already selected
         if selectedPositions.contains(position) { return }
         
-        // If this is the second position, just add it
-        if selectedPositions.count == 1 {
-            selectedPositions.append(position)
-            return
+        // Check if position is adjacent to the last selected position
+        if let lastPosition = selectedPositions.last {
+            if !lastPosition.isAdjacent(to: position) {
+                return // Not adjacent, don't add
+            }
         }
         
-        // For two numbers only, don't allow more than 2 selections
-        if selectedPositions.count >= 2 {
-            return
-        }
+        selectedPositions.append(position)
     }
     
     /// End selection
@@ -103,16 +101,14 @@ class GridModel {
         return selectedValues.reduce(0, +)
     }
     
-    /// Check if current selection matches a solution
-    func doesSelectionMatch(solution: [GridPosition]) -> Bool {
-        guard selectedPositions.count == 2 && solution.count == 2 else { return false }
-        
-        // Check forward direction
-        if selectedPositions == solution { return true }
-        
-        // Check backward direction
-        if selectedPositions == solution.reversed() { return true }
-        
-        return false
+    /// Get the number formed by selected digits
+    var selectedNumber: Int {
+        let digits = selectedValues.map { String($0) }.joined()
+        return Int(digits) ?? 0
+    }
+    
+    /// Check if current selection forms the target number
+    func doesSelectionFormNumber(_ targetNumber: Int) -> Bool {
+        return selectedNumber == targetNumber
     }
 }
