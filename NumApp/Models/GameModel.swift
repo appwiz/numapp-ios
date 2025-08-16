@@ -14,6 +14,7 @@ class GameModel {
     var questions: [Question] = []
     var currentQuestionIndex = 0
     var level = 1
+    var showingLevelCompleteAnimation = false
     
     init() {
         generateNewLevel()
@@ -145,10 +146,15 @@ class GameModel {
             }
         }
         
-        // All questions solved, advance to next level
+        // All questions solved, show celebration then advance to next level
         if allQuestionsSolved {
-            level += 1
-            generateNewLevel()
+            showingLevelCompleteAnimation = true
+            // Delay advancing to next level to show animation
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                self.level += 1
+                self.showingLevelCompleteAnimation = false
+                self.generateNewLevel()
+            }
         }
     }
     

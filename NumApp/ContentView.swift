@@ -188,6 +188,66 @@ struct GameView: View {
                 endPoint: .bottomTrailing
             )
         )
+        .overlay(
+            // Level completion celebration
+            Group {
+                if gameModel.showingLevelCompleteAnimation {
+                    ZStack {
+                        // Semi-transparent overlay
+                        Color.black.opacity(0.3)
+                            .ignoresSafeArea()
+                        
+                        // Fireworks animation
+                        FireworksView()
+                            .ignoresSafeArea()
+                        
+                        // Celebration text
+                        VStack(spacing: 20) {
+                            Text("🎉 LEVEL COMPLETE! 🎉")
+                                .font(.largeTitle)
+                                .fontWeight(.bold)
+                                .foregroundStyle(
+                                    LinearGradient(
+                                        colors: [.yellow, .orange],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    )
+                                )
+                                .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 2)
+                                .scaleEffect(gameModel.showingLevelCompleteAnimation ? 1.2 : 1.0)
+                                .animation(.spring(response: 0.6, dampingFraction: 0.8).repeatCount(3, autoreverses: true), value: gameModel.showingLevelCompleteAnimation)
+                            
+                            Text("🌟 Moving to Level \(gameModel.level + 1) 🌟")
+                                .font(.title2)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.white)
+                                .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 2)
+                        }
+                        .padding()
+                        .background(
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(
+                                    LinearGradient(
+                                        colors: [.blue.opacity(0.8), .purple.opacity(0.8)],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                .stroke(
+                                    LinearGradient(
+                                        colors: [.yellow, .orange],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    ),
+                                    lineWidth: 3
+                                )
+                        )
+                        .shadow(color: .black.opacity(0.3), radius: 10, x: 0, y: 5)
+                    }
+                    .transition(.opacity.combined(with: .scale))
+                }
+            }
+        )
     }
 }
 
@@ -398,6 +458,93 @@ struct GridCellView: View {
             gameModel.gridModel.addToSelection(position)
         }
     }
+}
+
+struct FireworksView: View {
+    @State private var particles: [FireworkParticle] = []
+    @State private var animationTimer: Timer?
+    
+    var body: some View {
+        ZStack {
+            ForEach(particles, id: \.id) { particle in
+                Circle()
+                    .fill(particle.color)
+                    .frame(width: particle.size, height: particle.size)
+                    .position(particle.position)
+                    .opacity(particle.opacity)
+                    .scaleEffect(particle.scale)
+            }
+        }
+        .onAppear {
+            startFireworks()
+        }
+        .onDisappear {
+            stopFireworks()
+        }
+    }
+    
+    private func startFireworks() {
+        animationTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+            createFireworkBurst()
+            updateParticles()
+        }
+    }
+    
+    private func stopFireworks() {
+        animationTimer?.invalidate()
+        animationTimer = nil
+    }
+    
+    private func createFireworkBurst() {
+        let centerX = CGFloat.random(in: 100...300)
+        let centerY = CGFloat.random(in: 150...400)
+        let colors: [Color] = [.red, .orange, .yellow, .green, .blue, .purple, .pink, .mint, .cyan]
+        
+        for _ in 0..<12 {
+            let angle = Double.random(in: 0...(2 * .pi))
+            let velocity = CGFloat.random(in: 50...120)
+            let color = colors.randomElement() ?? .yellow
+            
+            let particle = FireworkParticle(
+                position: CGPoint(x: centerX, y: centerY),
+                velocity: CGPoint(
+                    x: CGFloat(cos(angle)) * velocity,
+                    y: CGFloat(sin(angle)) * velocity
+                ),
+                color: color,
+                size: CGFloat.random(in: 4...12),
+                opacity: 1.0,
+                scale: 1.0,
+                lifespan: Double.random(in: 1.0...2.5)
+            )
+            particles.append(particle)
+        }
+    }
+    
+    private func updateParticles() {
+        particles = particles.compactMap { particle in
+            var updatedParticle = particle
+            updatedParticle.position.x += particle.velocity.x * 0.1
+            updatedParticle.position.y += particle.velocity.y * 0.1
+            updatedParticle.velocity.y += 50 * 0.1 // gravity
+            updatedParticle.lifespan -= 0.1
+            updatedParticle.opacity = max(0, updatedParticle.lifespan / 2.0)
+            updatedParticle.scale = 1.0 + (2.0 - updatedParticle.lifespan) * 0.5
+            
+            return updatedParticle.lifespan > 0 ? updatedParticle : nil
+        }
+    }
+}
+
+struct FireworkParticle {
+    let id = UUID()
+    var position: CGPoint
+    var velocity: CGPoint
+    let color: Color
+    let size: CGFloat
+    var opacity: Double
+    var scale: CGFloat
+    var lifespan: Double
 }
 
 #Preview {
