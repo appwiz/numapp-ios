@@ -78,7 +78,7 @@ struct GameView: View {
                         HStack {
                             Image(systemName: "sparkles")
                                 .font(.title3)
-                            Text("New Level")
+                            Text("Restart Level")
                                 .font(.headline)
                                 .fontWeight(.semibold)
                         }
