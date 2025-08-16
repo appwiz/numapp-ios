@@ -10,11 +10,14 @@ import SwiftUI
 
 @Observable
 class GameModel {
+    static let maxLevel = 10
+    
     var gridModel = GridModel()
     var questions: [Question] = []
     var currentQuestionIndex = 0
     var level = 1
     var showingLevelCompleteAnimation = false
+    var showingGameCompleteAnimation = false
     
     init() {
         generateNewLevel()
@@ -146,14 +149,19 @@ class GameModel {
             }
         }
         
-        // All questions solved, show celebration then advance to next level
+        // All questions solved, show celebration then advance to next level or complete game
         if allQuestionsSolved {
-            showingLevelCompleteAnimation = true
-            // Delay advancing to next level to show animation
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-                self.level += 1
-                self.showingLevelCompleteAnimation = false
-                self.generateNewLevel()
+            if level >= GameModel.maxLevel {
+                // Game completed!
+                showingGameCompleteAnimation = true
+            } else {
+                showingLevelCompleteAnimation = true
+                // Delay advancing to next level to show animation
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                    self.level += 1
+                    self.showingLevelCompleteAnimation = false
+                    self.generateNewLevel()
+                }
             }
         }
     }
@@ -172,6 +180,13 @@ class GameModel {
     /// Reset to beginning
     func reset() {
         level = 1
+        showingLevelCompleteAnimation = false
+        showingGameCompleteAnimation = false
         generateNewLevel()
+    }
+    
+    /// Restart the game from level 1
+    func restartGame() {
+        reset()
     }
 }

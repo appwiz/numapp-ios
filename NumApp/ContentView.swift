@@ -246,6 +246,119 @@ struct GameView: View {
                     }
                     .transition(.opacity.combined(with: .scale))
                 }
+                
+                // Game completion celebration
+                if gameModel.showingGameCompleteAnimation {
+                    ZStack {
+                        // Full screen background
+                        LinearGradient(
+                            colors: [.purple, .pink, .orange, .yellow],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                        .ignoresSafeArea()
+                        
+                        // Rainbow background
+                        RainbowView()
+                            .ignoresSafeArea()
+                        
+                        // Fireworks
+                        FireworksView()
+                            .ignoresSafeArea()
+                        
+                        // Dancing unicorns
+                        DancingUnicornsView()
+                            .ignoresSafeArea()
+                        
+                        // Victory content
+                        VStack(spacing: 40) {
+                            VStack(spacing: 20) {
+                                Text("🎉🦄🌈 YOU WON! 🌈🦄🎉")
+                                    .font(.system(size: 36, weight: .bold, design: .rounded))
+                                    .foregroundStyle(
+                                        LinearGradient(
+                                            colors: [.white, .yellow, .white],
+                                            startPoint: .leading,
+                                            endPoint: .trailing
+                                        )
+                                    )
+                                    .shadow(color: .black.opacity(0.5), radius: 3, x: 0, y: 3)
+                                    .multilineTextAlignment(.center)
+                                    .scaleEffect(gameModel.showingGameCompleteAnimation ? 1.2 : 1.0)
+                                    .animation(.spring(response: 0.6, dampingFraction: 0.8).repeatCount(5, autoreverses: true), value: gameModel.showingGameCompleteAnimation)
+                                
+                                Text("🏆 CONGRATULATIONS! 🏆")
+                                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                                    .foregroundColor(.white)
+                                    .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 2)
+                                
+                                Text("You completed all 10 levels!")
+                                    .font(.system(size: 18, weight: .semibold, design: .rounded))
+                                    .foregroundColor(.white.opacity(0.9))
+                                    .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 2)
+                            }
+                            
+                            Button(action: {
+                                gameModel.restartGame()
+                            }) {
+                                HStack(spacing: 15) {
+                                    Text("🚀")
+                                        .font(.title2)
+                                    Text("Play Again")
+                                        .font(.title2)
+                                        .fontWeight(.bold)
+                                    Text("🚀")
+                                        .font(.title2)
+                                }
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 30)
+                                .padding(.vertical, 15)
+                                .background(
+                                    Capsule()
+                                        .fill(
+                                            LinearGradient(
+                                                colors: [.green, .blue, .purple],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            )
+                                        )
+                                        .stroke(
+                                            LinearGradient(
+                                                colors: [.yellow, .orange],
+                                                startPoint: .leading,
+                                                endPoint: .trailing
+                                            ),
+                                            lineWidth: 4
+                                        )
+                                )
+                                .shadow(color: .black.opacity(0.3), radius: 10, x: 0, y: 5)
+                                .scaleEffect(1.1)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                        }
+                        .padding(40)
+                        .background(
+                            RoundedRectangle(cornerRadius: 30)
+                                .fill(
+                                    LinearGradient(
+                                        colors: [.black.opacity(0.3), .black.opacity(0.5)],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                .stroke(
+                                    LinearGradient(
+                                        colors: [.white, .yellow, .white],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    ),
+                                    lineWidth: 3
+                                )
+                        )
+                        .shadow(color: .black.opacity(0.5), radius: 20, x: 0, y: 10)
+                    }
+                    .transition(.opacity.combined(with: .scale))
+                }
             }
         )
     }
@@ -545,6 +658,143 @@ struct FireworkParticle {
     var opacity: Double
     var scale: CGFloat
     var lifespan: Double
+}
+
+struct DancingUnicornsView: View {
+    @State private var unicorns: [DancingUnicorn] = []
+    @State private var animationTimer: Timer?
+    
+    var body: some View {
+        ZStack {
+            ForEach(unicorns, id: \.id) { unicorn in
+                Text("🦄")
+                    .font(.system(size: unicorn.size))
+                    .position(unicorn.position)
+                    .rotationEffect(.degrees(unicorn.rotation))
+                    .scaleEffect(unicorn.scale)
+                    .opacity(unicorn.opacity)
+            }
+        }
+        .onAppear {
+            startUnicornDance()
+        }
+        .onDisappear {
+            stopUnicornDance()
+        }
+    }
+    
+    private func startUnicornDance() {
+        // Create initial unicorns
+        for _ in 0..<6 {
+            createUnicorn()
+        }
+        
+        animationTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+            updateUnicorns()
+            if unicorns.count < 8 && Double.random(in: 0...1) < 0.3 {
+                createUnicorn()
+            }
+        }
+    }
+    
+    private func stopUnicornDance() {
+        animationTimer?.invalidate()
+        animationTimer = nil
+    }
+    
+    private func createUnicorn() {
+        let unicorn = DancingUnicorn(
+            position: CGPoint(
+                x: CGFloat.random(in: 50...350),
+                y: CGFloat.random(in: 200...600)
+            ),
+            velocity: CGPoint(
+                x: CGFloat.random(in: -30...30),
+                y: CGFloat.random(in: -50...50)
+            ),
+            size: CGFloat.random(in: 30...60),
+            rotation: 0,
+            rotationSpeed: Double.random(in: -180...180),
+            scale: 1.0,
+            opacity: 1.0,
+            lifespan: Double.random(in: 3.0...6.0)
+        )
+        unicorns.append(unicorn)
+    }
+    
+    private func updateUnicorns() {
+        unicorns = unicorns.compactMap { unicorn in
+            var updated = unicorn
+            updated.position.x += unicorn.velocity.x * 0.1
+            updated.position.y += unicorn.velocity.y * 0.1
+            updated.rotation += unicorn.rotationSpeed * 0.1
+            updated.lifespan -= 0.1
+            updated.opacity = max(0, updated.lifespan / 3.0)
+            updated.scale = 1.0 + sin(updated.lifespan * 2) * 0.2
+            
+            // Bounce off edges
+            if updated.position.x < 0 || updated.position.x > 400 {
+                updated.velocity.x *= -1
+            }
+            if updated.position.y < 100 || updated.position.y > 700 {
+                updated.velocity.y *= -1
+            }
+            
+            return updated.lifespan > 0 ? updated : nil
+        }
+    }
+}
+
+struct DancingUnicorn {
+    let id = UUID()
+    var position: CGPoint
+    var velocity: CGPoint
+    let size: CGFloat
+    var rotation: Double
+    let rotationSpeed: Double
+    var scale: CGFloat
+    var opacity: Double
+    var lifespan: Double
+}
+
+struct RainbowView: View {
+    @State private var animationOffset: CGFloat = 0
+    
+    var body: some View {
+        ZStack {
+            // Multiple rainbow arcs
+            ForEach(0..<3, id: \.self) { index in
+                RainbowArc(offset: animationOffset + CGFloat(index) * 100)
+                    .opacity(0.8)
+            }
+        }
+        .onAppear {
+            withAnimation(.linear(duration: 3.0).repeatForever(autoreverses: false)) {
+                animationOffset = 400
+            }
+        }
+    }
+}
+
+struct RainbowArc: View {
+    let offset: CGFloat
+    
+    var body: some View {
+        Path { path in
+            let center = CGPoint(x: 200, y: 400)
+            let radius: CGFloat = 150
+            path.addArc(center: center, radius: radius, startAngle: .degrees(0), endAngle: .degrees(180), clockwise: false)
+        }
+        .stroke(
+            LinearGradient(
+                colors: [.red, .orange, .yellow, .green, .blue, .indigo, .purple],
+                startPoint: .leading,
+                endPoint: .trailing
+            ),
+            lineWidth: 20
+        )
+        .offset(x: offset)
+    }
 }
 
 #Preview {
