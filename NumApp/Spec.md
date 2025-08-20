@@ -4,11 +4,11 @@ A SwiftUI-based iOS game where players find digit sequences in a grid that form 
 
 ## Game Description
 
-This is an iOS app using Swift and SwiftUI. The game displays a 5x5 grid of single digits (0-9) along with math questions, presented one at a time. Each question shows an addition equation where players must find the answer by selecting digits in the grid that form the target number.
+This is an iOS app using Swift and SwiftUI. The game displays a 6x6 grid of single digits (0-9) along with math questions, presented one at a time. Each question shows an addition equation where players must find the answer by selecting digits in the grid that form the target number.
 
 ### Game Features
 
-- **5x5 Grid**: Single digits (0-9) displayed in a grid with flat pastel color backgrounds for improved readability
+- **6x6 Grid**: Single digits (0-9) displayed in a grid with flat pastel color backgrounds for improved readability
 - **3 Questions per Level**: Each question shows an equation like "45 + 23 = ?" where players find digits that form "68"
 - **Multi-directional Solutions**: Solutions can be found horizontally, vertically, diagonally, and in both forward and backward directions
 - **Touch & Drag Selection**: Players tap or drag their finger across adjacent cells to select digit sequences

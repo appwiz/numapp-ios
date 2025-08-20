@@ -10,7 +10,7 @@ import SwiftUI
 
 @Observable
 class GridModel {
-    static let gridSize = 5
+    static let gridSize = 6
     
     var grid: [[Int]] = []
     var selectedPositions: [GridPosition] = []
